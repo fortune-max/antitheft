@@ -1,0 +1,14 @@
+Python (2.7)
+    - google-auth-httplib2
+    - google-auth-oauthlib
+    - google-api-python-client
+Minicap
+busybox
+    - telnetd
+    - ftpd
+    - tcpsvd
+    - wget
+sshd, ssh, ssh-keysign, passwd
+curl
+[setprop, svc, sleep, getprop]
+nano

